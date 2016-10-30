@@ -1,0 +1,6 @@
+---
+
+- name: Ensure "wget" is installed
+  yum:
+    name: wget
+    state: present

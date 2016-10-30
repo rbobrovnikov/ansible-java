@@ -1,0 +1,9 @@
+---
+
+java_site: "http://www.oracle.com"
+java_ver: 8
+java_tarball_ext: tar.gz
+java_home: "/srv/app/java"
+java_dl_script_path: "/tmp"
+java_ignore_script_status: false 
+java_symlink: "/usr/bin/java"

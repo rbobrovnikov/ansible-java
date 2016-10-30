@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+url_const={{ java_site }}
+url_dl_page=$(curl -s $url_const/technetwork/java/javase/downloads/index.html | grep -Po "/technetwork/java/javase/downloads/jdk{{ java_ver }}-downloads-.+?.html" | head -1)
+url_comb=$url_const$url_dl_page
+url_dl_pkg=$(curl -s $url_comb | egrep -o "http\:\/\/download.oracle\.com\/otn-pub\/java\/jdk\/[7-8]u[0-9]+\-(.*)+\/jdk-[7-8]u[0-9]+(.*)linux-x64.{{ java_tarball_ext }}" | tail -n 1)
+
+wget -q --no-cookies --no-check-certificate --header "Cookie: oraclelicense=accept-securebackup-cookie" -O - $url_dl_pkg | tar xz --strip-components=1 --no-same-owner
+
+echo 1 > /tmp/var_jdk_script_st

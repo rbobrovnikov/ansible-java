@@ -1,0 +1,59 @@
+---
+
+- name: Include RedHat specific plays
+  include: install-{{ ansible_os_family }}.yml
+  when: ansible_os_family == "RedHat"
+
+- name: Include Debian specific plays
+  include: install-{{ ansible_os_family }}.yml
+  when: ansible_os_family == "Debian"
+
+- name: Copy script for getting JDK tarball 
+  template:
+    src: get-jdk-latest.sh.j2
+    dest: "{{ java_dl_script_path }}/get-jdk-latest.sh"
+    owner: root
+    group: root
+    mode: 0750
+
+- name: Ensure if java home directory exists
+  file:
+    path: "{{ java_home }}"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
+# Idempotence implementation
+- name: Ensure var_jdk_script_st status file exists
+  file:
+    path: "{{ java_dl_script_path }}/var_jdk_script_st"
+    state: touch
+  changed_when: False
+
+- name: Get get-jdk-latest.sh script run status
+  command: cat {{ java_dl_script_path }}/var_jdk_script_st
+  register: script_stat
+  changed_when: False
+
+- name: Run get-jdk-latest.sh script
+  shell: "{{ java_dl_script_path }}/get-jdk-latest.sh"
+  args:
+    chdir: "{{ java_home }}"
+  when: script_stat.stdout != "1" or java_ignore_script_status  == true 
+
+- name: Symlinking JDK to the specified path
+  file:
+    src: "{{ java_home }}"
+    dest: "{{ java_symlink }}"
+    owner: root
+    group: root
+    mode: 0644
+    state: link
+
+- name: Environment setup 
+  template:
+    src: java-home.sh.j2
+    dest: /etc/profile.d/java.sh
+    mode: 0644
+  when: java_home is defined
