@@ -24,23 +24,11 @@
     group: root
     mode: 0755
 
-# Idempotence implementation
-- name: Ensure var_jdk_script_st status file exists
-  file:
-    path: "{{ java_dl_script_path }}/var_jdk_script_st"
-    state: touch
-  changed_when: False
-
-- name: Get get-jdk-latest.sh script run status
-  command: cat {{ java_dl_script_path }}/var_jdk_script_st
-  register: script_stat
-  changed_when: False
-
 - name: Run get-jdk-latest.sh script
   shell: "{{ java_dl_script_path }}/get-jdk-latest.sh"
   args:
     chdir: "{{ java_home }}"
-  when: script_stat.stdout != "1" or java_ignore_script_status  == true 
+    creates: /srv/app/var_jdk_script_st
 
 - name: Symlinking JDK to the specified path
   file:

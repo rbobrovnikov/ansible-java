@@ -7,4 +7,4 @@ url_dl_pkg=$(curl -s $url_comb | egrep -o "http\:\/\/download.oracle\.com\/otn-p
 
 wget -q --no-cookies --no-check-certificate --header "Cookie: oraclelicense=accept-securebackup-cookie" -O - $url_dl_pkg | tar xz --strip-components=1 --no-same-owner
 
-echo 1 > /tmp/var_jdk_script_st
+echo 1 > /srv/app/var_jdk_script_st
